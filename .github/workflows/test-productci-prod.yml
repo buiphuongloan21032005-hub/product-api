@@ -1,0 +1,86 @@
+name: Product API Production CI
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  product-api-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Build and start containers
+        run: docker compose up -d --build
+
+      - name: Show containers
+        run: docker compose ps
+
+      - name: Wait for Product API healthcheck
+        run: |
+          echo "Waiting for Product API..."
+
+          for i in {1..30}; do
+            STATUS=$(docker inspect \
+              --format='{{.State.Health.Status}}' \
+              product-api 2>/dev/null || echo "starting")
+
+            echo "Attempt $i - Product API status: $STATUS"
+
+            if [ "$STATUS" = "healthy" ]; then
+              echo "Product API is healthy"
+              exit 0
+            fi
+
+            sleep 2
+          done
+
+          echo "Product API did not become healthy"
+          docker compose logs
+          exit 1
+
+      - name: Test API health
+        run: |
+          curl --fail http://localhost:3000/health
+
+      - name: Test CREATE Product
+        run: |
+          curl --fail \
+            -X POST \
+            http://localhost:3000/api/products \
+            -H "Content-Type: application/json" \
+            -d '{"pid":"CI001","pname":"CI Product","price":1000,"quantity":10}'
+
+      - name: Test READ Product
+        run: |
+          curl --fail \
+            http://localhost:3000/api/products/CI001
+
+      - name: Test UPDATE Product
+        run: |
+          curl --fail \
+            -X PUT \
+            http://localhost:3000/api/products/CI001 \
+            -H "Content-Type: application/json" \
+            -d '{"pname":"CI Product Updated","price":2000,"quantity":20}'
+
+      - name: Test DELETE Product
+        run: |
+          curl --fail \
+            -X DELETE \
+            http://localhost:3000/api/products/CI001
+
+      - name: Show Docker logs if failed
+        if: failure()
+        run: docker compose logs
+
+      - name: Stop containers
+        if: always()
+        run: docker compose down -v
