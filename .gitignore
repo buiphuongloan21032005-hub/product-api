@@ -1,0 +1,5 @@
+# Không push thư viện
+node_modules/
+
+# Không push biến môi trường
+.env
