@@ -67,3 +67,43 @@ jobs:
           push: true
           tags: |
             phuongloan21/product-api:latest
+
+  deploy-local:
+    needs: cd
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Pull latest Docker images
+        run: docker compose -f docker-compose-prod.yaml pull
+
+      - name: Deploy to Local Docker Engine
+        run: docker compose -f docker-compose-prod.yaml up -d
+
+      - name: Show containers
+        run: docker compose -f docker-compose-prod.yaml ps
+
+      - name: Wait for Product API healthcheck
+        run: |
+          echo "Waiting for Product API..."
+
+          for i in {1..30}; do
+            STATUS=$(docker inspect \
+              --format='{{.State.Health.Status}}' \
+              product-api 2>/dev/null || echo "starting")
+
+            echo "Attempt $i - Product API status: $STATUS"
+
+            if [ "$STATUS" = "healthy" ]; then
+              echo "Local Product API is healthy"
+              exit 0
+            fi
+
+            sleep 2
+          done
+
+          echo "Local Product API did not become healthy"
+          docker compose -f docker-compose-prod.yaml logs
+          exit 1

@@ -1,5 +1,4 @@
 services:
-
   mongodb:
     image: mongo:8
     container_name: nammongodb
@@ -24,7 +23,6 @@ services:
   product-api:
     build: .
     container_name: product-api
-
     ports:
       - "3000:3000"
 
