@@ -56,7 +56,7 @@ jobs:
             -X POST \
             http://localhost:3000/api/products \
             -H "Content-Type: application/json" \
-            -d '{"pid":"CI001","pname":"CI Product","price":3000,"quantity":10}'
+            -d '{"pid":"CI001","pname":"CI Product","price":1000,"quantity":10}'
 
       - name: Test READ Product
         run: |
