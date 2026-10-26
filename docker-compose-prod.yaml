@@ -22,6 +22,7 @@ services:
   product-api:
     image: phuongloan21/product-api:latest
     container_name: product-api
+    platform: linux/amd64
 
     ports:
       - "3000:3000"
