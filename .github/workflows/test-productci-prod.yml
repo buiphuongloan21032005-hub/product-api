@@ -69,7 +69,7 @@ jobs:
             -X PUT \
             http://localhost:3000/api/products/CI001 \
             -H "Content-Type: application/json" \
-            -d '{"pname":"CI Product Updated","price":3000,"quantity":20}'
+            -d '{"pname":"CI Product Updated","price":4000,"quantity":20}'
 
       - name: Test DELETE Product
         run: |
