@@ -61,7 +61,7 @@ jobs:
             -X POST \
             http://localhost:3000/api/products \
             -H "Content-Type: application/json" \
-            -d '{"pid":"CI001","pname":"CI Product","price":2000,"quantity":20}'
+            -d '{"pid":"CI001","pname":"CI Product","price":1000,"quantity":20}'
 
       - name: Test READ Product
         run: |
@@ -74,7 +74,7 @@ jobs:
             -X PUT \
             http://localhost:3000/api/products/CI001 \
             -H "Content-Type: application/json" \
-            -d '{"pname":"CI Product Updated","price":3000,"quantity":20}'
+            -d '{"pname":"CI Product Updated","price":2000,"quantity":20}'
 
       - name: Test DELETE Product
         run: |
