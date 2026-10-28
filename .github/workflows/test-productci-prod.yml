@@ -51,7 +51,7 @@ jobs:
           docker compose logs
           exit 1
 
-      - name: update API health
+      - name: Test API health
         run: |
           curl --fail http://localhost:3000/health
 
