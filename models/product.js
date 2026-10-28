@@ -21,7 +21,7 @@ const productSchema = new mongoose.Schema({
 
     quantity: {
         type: Number,
-        required: true,
+        required: false,
         min: 0 //ngăn price và quantity nhận giá trị âm ở validation của Mongoose.
     }
 }, {
